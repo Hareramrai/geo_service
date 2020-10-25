@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+  web:
+    build: .
+    image: web
+    volumes:
+      - .:/usr/src/app
+    environment:
+      RAILS_ENV: development
+      DB_HOST: pg
+      DB_USER: postgres
+      DB_PASS: example
+      DB_NAME: geo_service
+      REDIS_URL_SIDEKIQ: redis://redis:6379/1
+    ports:
+      - "3000:3000"
+    depends_on:
+      - pg
+  pg:
+    image: mdillon/postgis:9.6-alpine
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: example
+    ports:
+      - "5432:5432"
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+
+volumes:
+  pg-data:
